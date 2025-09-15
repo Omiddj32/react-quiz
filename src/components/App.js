@@ -18,10 +18,13 @@ import Timer from "./Timer";
 import QuizType from "./QuizType";
 import { useLocalStorageState } from "./useLocalStorageState";
 
+// console.log(questions.questions);
+
 const SECS_PER_QUESTION = 30;
 
 const initialState = {
   questions: [],
+  // questions: questions.questions,
 
   // 'loading', 'error', 'ready', 'active', 'finished'
   status: "loading",
@@ -125,17 +128,23 @@ export default function App() {
 
   const numQuestions = questions.length;
   const maxPossiblePoints = questions.reduce((acc, cur) => acc + cur.points, 0);
+  // const maxPossiblePoints = 10;
 
   const [score, setScore] = useLocalStorageState([], "highscore");
+
+  // console.log(questions);
 
   function handleHighscore() {
     setScore(highscore);
   }
 
-  useEffect(function () {
-    fetch(`http://localhost:9000/questions`)
+  useEffect(() => {
+    fetch("/questions.json")
       .then((res) => res.json())
-      .then((data) => dispatch({ type: "dataReceived", payload: data }))
+      .then((data) => {
+        dispatch({ type: "dataReceived", payload: data.questions });
+        // console.log(data.questions);
+      })
       .catch(() => dispatch({ type: "dataFailed" }));
   }, []);
 
